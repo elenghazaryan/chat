@@ -1,0 +1,19 @@
+<html>
+    <head>
+      {% if title %}
+      <title>{{ title }} - Chat</title>
+      {% else %}
+      <title>Welcome to Chat</title>
+      {% endif %}
+    </head>
+    <body>
+        <div>Chat:
+            <a href="/index">Home</a>
+            <a href="/login">Login</a>
+            <a href="/register">Register</a>
+            <a href="/chat">Chat</a>
+        </div>
+        <hr>
+        {% block content %}{% endblock %}
+    </body>
+</html>
