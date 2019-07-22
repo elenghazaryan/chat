@@ -2,6 +2,7 @@ from extensions import db, argon2
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 
+
 class CRUDMixin(object):
     __table_args__ = {'extend_existing': True}
 
@@ -56,6 +57,18 @@ class User(CRUDMixin, UserMixin, db.Model):
         return [message for message in self.messages
                 if not message.is_delivered and message.is_to_user(self.username)]
 
+    def is_authenticated(self):
+        return True
+
+    def is_active(self):
+        return True
+
+    def is_anonymous(self):
+        return False
+
+    def get_id(self):
+        return self.username
+
 
 class Message(CRUDMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -95,3 +108,12 @@ class Message(CRUDMixin, db.Model):
         for m in messages:
             m.set_delivered(commit=False)
         db.session.commit()
+
+
+class AnonymousUser:
+    is_authenticated = False
+    is_active = False
+    is_anonymous = True
+
+    def get_id(self):
+        return None

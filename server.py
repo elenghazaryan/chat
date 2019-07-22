@@ -1,10 +1,10 @@
 from flask import Flask, request, render_template, flash, redirect
 from flask_socketio import Namespace, emit, disconnect
-from extensions import db, socketio, migrate, argon2, login
-from models import Message, User
+from extensions import db, socketio, migrate, argon2, login_manager
+from models import Message, User, AnonymousUser
 from forms import LoginForm, RegisterForm
-from flask_login import current_user, login_user
-from models import User
+from flask_login import current_user, login_user, logout_user
+
 
 host = 'localhost'
 port = 5001
@@ -22,15 +22,21 @@ db.init_app(app)
 socketio.init_app(app, async_mode='threading')
 migrate.init_app(app, db)
 argon2.init_app(app)
-login.init_app(app)
+login_manager.init_app(app)
 
-# with app.app_context():
-#     db.create_all()
+login_manager.anonymous_user = AnonymousUser
+
+
+@login_manager.user_loader
+def load_user(username):
+    return User.query.filter_by(username=username).first()
 
 
 @app.route('/')
 @app.route('/index')
 def index():
+    if not current_user.is_authenticated:
+        return redirect('/login')
     return render_template('index.html')
 
 
@@ -40,21 +46,26 @@ def login():
         return redirect('/index')
     form = LoginForm(request.form)
     if form.validate_on_submit():
-        user = User.query.get.filter_by(username=form.username.data).first()
-        if user is None or not user.check_password(form.password.data):
-            flash('Invalid username or password')
-            return redirect('/login')
+        user = form.get_user()
         login_user(user, remember=form.remember_me.data)
-       return redirect('/index')
+        return redirect('/index')
     return render_template('login.html', title='Sign In', form=form)
 
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
+    if current_user.is_authenticated:
+        return redirect('/index')
     form = RegisterForm(request.form)
     if form.validate_on_submit():
         return redirect('/login')
     return render_template('register.html', title='Register', form=form)
+
+
+@app.route('/logout')
+def logout():
+    logout_user()
+    return redirect('/login')
 
 
 # @app.route('/chat')
