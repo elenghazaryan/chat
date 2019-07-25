@@ -2,7 +2,7 @@ from flask import Flask, request, render_template, flash, redirect
 from flask_socketio import Namespace, emit, disconnect
 from extensions import db, socketio, migrate, argon2, login_manager
 from models import Message, User, AnonymousUser
-from forms import LoginForm, RegisterForm
+from forms import LoginForm, RegisterForm, ChatForm
 from flask_login import current_user, login_user, logout_user
 
 
@@ -68,8 +68,16 @@ def logout():
     return redirect('/login')
 
 
-# @app.route('/chat')
-# def chat():
+@app.route('/chat')
+def chat():
+    form = ChatForm(request.form)
+    if not current_user.is_authenticated:
+        return redirect('/register')
+    else:
+        return render_template('chat.html', title='Chat', form=form)
+
+    # if form.validate_on_submit():
+    #     return redirect('/chat')
 
 
 class ChatSocksApi(Namespace):

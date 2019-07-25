@@ -1,5 +1,20 @@
 {% extends "base.html" %}
 
 {% block content %}
-
+    <h1>Chat</h1>
+    <form action="" method="post">
+        {{ form.hidden_tag() }}
+        <p>
+            {{ form.message.label }}<br>
+            {{ form.message(size=2) }}
+        </p>
+        <p>{{ form.send() }}</p>
+    </form>
+<style>
+h1 {
+  color: darkmagenta;
+  font-family: cursive;
+  font-size: 300%;
+}
+</style>
 {% endblock %}

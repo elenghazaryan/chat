@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, PasswordField, BooleanField
+from wtforms import StringField, SubmitField, PasswordField, BooleanField, TextAreaField
 from wtforms.validators import DataRequired, Length, EqualTo
 from models import User
 
@@ -57,3 +57,8 @@ class LoginForm(FlaskForm):
 
     def get_user(self):
         return User.query.filter_by(username=self.username.data).first()
+
+
+class ChatForm(FlaskForm):
+    message = TextAreaField('Input your message', validators=[DataRequired()])
+    send = SubmitField('Send')
