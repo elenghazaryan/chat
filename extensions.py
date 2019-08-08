@@ -12,3 +12,7 @@ argon2 = Argon2()
 
 from flask_login import LoginManager
 login_manager = LoginManager()
+
+from flask_bootstrap import Bootstrap
+bootstrap = Bootstrap()
+

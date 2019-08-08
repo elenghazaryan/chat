@@ -1,28 +1,26 @@
 from flask import Flask, request, render_template, flash, redirect
 from flask_socketio import Namespace, emit, disconnect
-from extensions import db, socketio, migrate, argon2, login_manager
+from extensions import db, socketio, migrate, argon2, login_manager, bootstrap
 from models import Message, User, AnonymousUser
 from forms import LoginForm, RegisterForm, ChatForm
 from flask_login import current_user, login_user, logout_user
 
-
 host = 'localhost'
 port = 5001
 
-
-app = Flask(__name__)
+app = Flask(__name__, static_url_path='/static')
 
 app.config['SECRET_KEY'] = 'secret!'
 app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///chat.db"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['DEBUG'] = True
 
-
 db.init_app(app)
 socketio.init_app(app, async_mode='threading')
 migrate.init_app(app, db)
 argon2.init_app(app)
 login_manager.init_app(app)
+bootstrap.init_app(app)
 
 login_manager.anonymous_user = AnonymousUser
 
